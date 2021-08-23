@@ -20,6 +20,7 @@ class SampleService extends RootService {
             if (error) throw new Error(error);
 
             delete body.id;
+
             const result = await this.sampleController.createRecord({ ...body });
             if (result.failed) {
                 throw new Error(result.error);
@@ -38,7 +39,7 @@ class SampleService extends RootService {
     async readRecordById(request, next) {
         try {
             const { id } = request.params;
-            if (!id) return next(this.processFailedResponse('Invalid ID supplied.'));
+            if (!id) throw new Error('Invalid ID supplied.');
 
             const result = await this.sampleController.readRecords({ id, isActive: true });
             if (result.failed) {
@@ -79,7 +80,7 @@ class SampleService extends RootService {
             const { params, query } = request;
 
             if (!params.keys || !params.keys) {
-                return next(this.processFailedResponse('Invalid key/keyword', 400));
+                throw new Error('Invalid key/keyword', 400);
             }
 
             const wildcardConditions = buildWildcardOptions(params.keys, params.keyword);
@@ -107,7 +108,7 @@ class SampleService extends RootService {
             const { id } = request.params;
             const data = request.body;
 
-            if (!id) return next(this.processFailedResponse('Invalid ID supplied.'));
+            if (!id) throw new Error('Invalid ID supplied.');
 
             const result = await this.sampleController.updateRecords({ id }, { ...data });
             if (result.failed) {
@@ -150,7 +151,7 @@ class SampleService extends RootService {
     async deleteRecordById(request, next) {
         try {
             const { id } = request.params;
-            if (!id) return next(this.processFailedResponse('Invalid ID supplied.'));
+            if (!id) throw new Error('Invalid ID supplied.');
 
             const result = await this.sampleController.deleteRecords({ id });
             if (result.failed) {

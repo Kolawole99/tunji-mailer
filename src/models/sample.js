@@ -11,6 +11,7 @@ const SampleSchema = new Schema({
         unique: true,
         default: 0,
     },
+
     // Model Required fields
     isActive: {
         type: Boolean,

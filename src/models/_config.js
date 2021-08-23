@@ -1,13 +1,13 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
  * */
-require('dotenv').config();
-const glob = require('glob');
 const { resolve } = require('path');
 
-const { APP_DB_URI } = process.env;
-
+require('dotenv').config();
+const glob = require('glob');
 const mongoose = require('mongoose');
+
+const { APP_DB_URI } = process.env;
 
 module.exports.connect = () => {
     try {

@@ -6,25 +6,6 @@ const appEvent = require('../events/_config');
 const { buildQuery } = require('../utilities/query');
 
 class RootService {
-    validateEmail(rawEmail) {
-        const email = rawEmail.trim();
-        if (email.length < 6) {
-            return {
-                isValid: false,
-                message: 'Email address is too short.',
-            };
-        }
-
-        const emailPattern =
-            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        const isValid = emailPattern.test(email);
-
-        return {
-            isValid,
-            message: isValid ? email : 'Invalid email address.',
-        };
-    }
-
     processFailedResponse(message, code = 400) {
         return {
             error: message,
