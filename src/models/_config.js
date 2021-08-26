@@ -1,10 +1,10 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
  * */
-const { resolve } = require('path');
 
 require('dotenv').config();
 const glob = require('glob');
+const { resolve } = require('path');
 const mongoose = require('mongoose');
 
 const { APP_DB_URI } = process.env;
@@ -18,12 +18,12 @@ module.exports.connect = () => {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
             },
-            (err) => {
+            (err, data) => {
                 if (err) {
                     console.log('Could not connect to database');
                     return;
                 }
-                console.log('Database connection established.');
+                if (data) console.log('Database connection established.');
             }
         );
     } catch (e) {
