@@ -66,7 +66,7 @@ const buildQuery = (options) => {
 
     Object.keys(options).forEach((field) => {
         const hasProperty = Object.prototype.hasOwnProperty.call(options, field);
-        const fieldValue = hasProperty === 'true' ? options[field].toLowerCase() : '';
+        const fieldValue = hasProperty === true ? options[field].toLowerCase() : '';
 
         if (fieldValue !== '') {
             let condition;
