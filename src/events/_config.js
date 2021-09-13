@@ -11,4 +11,8 @@ appEvent.on('error', (error) => {
     logger.error(`[AppEvent Error] ${error}`);
 });
 
+appEvent.on('sampleEventName', (param) => {
+    console.log(param);
+});
+
 module.exports = appEvent;
