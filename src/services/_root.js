@@ -64,9 +64,9 @@ class RootService {
             return this.processSuccessfulResponse(result);
         }
         if (result && result.ok && !result.nModified) {
-            return this.processSuccessfulResponse(result, 210);
+            return this.processSuccessfulResponse(result, 204);
         }
-        return this.processFailedResponse('Update failed', 200);
+        return this.processFailedResponse('Update failed', 400);
     }
 
     processDeleteResult(result) {
