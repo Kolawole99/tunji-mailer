@@ -1,10 +1,12 @@
 const sinon = require('sinon');
 
 module.exports = {
-    createRecord: sinon.spy(() => ({
-        id: 1,
-        _id: 'sjdhflkjasdf32uiw7p',
-    })),
+    createRecord: sinon.spy((data) => {
+        if (!Object.keys(data).length) {
+            return { failed: true, error: 'Just a random error' };
+        }
+        return { id: 1, _id: 'sjdhflkjasdf32uiw7p' };
+    }),
 
     readRecords: sinon.spy(() => [
         {
