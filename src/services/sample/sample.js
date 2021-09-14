@@ -3,30 +3,30 @@
  * */
 const RootService = require('../_root');
 const { buildQuery, buildWildcardOptions } = require('../../utilities/query');
+const { createSchema, updateSchema } = require('../../validators/sample');
 
 class SampleService extends RootService {
-    constructor(sampleController, schemaValidator) {
+    constructor(sampleController) {
         /** */
         super();
         this.sampleController = sampleController;
-        this.schemaValidator = schemaValidator;
         this.serviceName = 'SampleService';
     }
 
     async createRecord(request, next) {
         try {
             const { body } = request;
-            const { error } = this.schemaValidator.validate(body);
-            if (error) throw new Error(error);
+            if (Object.keys(body).length === 0) throw new Error('Data is required to create.');
 
             delete body.id;
 
+            const { error } = createSchema.validate(body);
+            if (error) throw new Error(error);
+
             const result = await this.sampleController.createRecord({ ...body });
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processSingleRead(result);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processSingleRead(result);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] createRecord: ${e.message}`,
@@ -42,11 +42,9 @@ class SampleService extends RootService {
             if (!id) throw new Error('Invalid ID supplied.');
 
             const result = await this.sampleController.readRecords({ id, isActive: true });
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processSingleRead(result[0]);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processSingleRead(result[0]);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] updateRecordById: ${e.message}`,
@@ -59,6 +57,7 @@ class SampleService extends RootService {
     async readRecordsByFilter(request, next) {
         try {
             const { query } = request;
+            if (Object.keys(query).length === 0) throw new Error('Query is required to filter.');
 
             const result = await this.handleDatabaseRead(this.sampleController, query);
             if (result.failed) {
@@ -78,8 +77,7 @@ class SampleService extends RootService {
     async readRecordsByWildcard(request, next) {
         try {
             const { params, query } = request;
-
-            if (!params.keys || !params.keys) {
+            if (Object.keys(params).length === 0 || Object.keys(query).length === 0) {
                 throw new Error('Invalid key/keyword', 400);
             }
 
@@ -106,16 +104,18 @@ class SampleService extends RootService {
     async updateRecordById(request, next) {
         try {
             const { id } = request.params;
-            const data = request.body;
-
             if (!id) throw new Error('Invalid ID supplied.');
 
+            const data = request.body;
+            if (Object.keys(data).length === 0) throw new Error('Update requires data.');
+
+            const { error } = updateSchema.validate(data);
+            if (error) throw new Error(error);
+
             const result = await this.sampleController.updateRecords({ id }, { ...data });
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processUpdateResult(result);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processUpdateResult(result);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] updateRecordById: ${e.message}`,
@@ -128,17 +128,21 @@ class SampleService extends RootService {
     async updateRecords(request, next) {
         try {
             const { options, data } = request.body;
+            if (!options || !data) throw new Error('Invalid options/data', 400);
+            if (Object.keys(options).length === 0) {
+                throw new Error('Options are required to update', 400);
+            }
+            if (Object.keys(data).length === 0) throw new Error('Data is required to update', 400);
+
             const { seekConditions } = buildQuery(options);
 
             const result = await this.sampleController.updateRecords(
                 { ...seekConditions },
                 { ...data }
             );
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processUpdateResult({ ...data, ...result });
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processUpdateResult({ ...data, ...result });
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] updateRecords: ${e.message}`,
@@ -154,11 +158,9 @@ class SampleService extends RootService {
             if (!id) throw new Error('Invalid ID supplied.');
 
             const result = await this.sampleController.deleteRecords({ id });
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processDeleteResult(result);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processDeleteResult(result);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] deleteRecordById: ${e.message}`,
@@ -171,14 +173,14 @@ class SampleService extends RootService {
     async deleteRecords(request, next) {
         try {
             const { options } = request.body;
+            if (Object.keys(options).length === 0) throw new Error('Options are required', 400);
+
             const { seekConditions } = buildQuery(options);
 
             const result = await this.sampleController.deleteRecords({ ...seekConditions });
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processDeleteResult({ ...result });
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processDeleteResult({ ...result });
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] deleteRecords: ${e.message}`,
