@@ -60,11 +60,9 @@ class SampleService extends RootService {
             if (Object.keys(query).length === 0) throw new Error('Query is required to filter.');
 
             const result = await this.handleDatabaseRead(this.sampleController, query);
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processMultipleReadResults(result);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processMultipleReadResults(result);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] readRecordsByFilter: ${e.message}`,
@@ -77,8 +75,12 @@ class SampleService extends RootService {
     async readRecordsByWildcard(request, next) {
         try {
             const { params, query } = request;
-            if (Object.keys(params).length === 0 || Object.keys(query).length === 0) {
-                throw new Error('Invalid key/keyword', 400);
+            if (!params || !query) throw new Error('Invalid key/keyword', 400);
+            if (Object.keys(params).length === 0) {
+                throw new Error('Keys are required to read', 400);
+            }
+            if (Object.keys(query).length === 0) {
+                throw new Error('Keywords are required to read', 400);
             }
 
             const wildcardConditions = buildWildcardOptions(params.keys, params.keyword);
@@ -87,11 +89,9 @@ class SampleService extends RootService {
                 query,
                 wildcardConditions
             );
-            if (result.failed) {
-                throw new Error(result.error);
-            } else {
-                return this.processMultipleReadResults(result);
-            }
+            if (result.failed) throw new Error(result.error);
+
+            return this.processMultipleReadResults(result);
         } catch (e) {
             const err = this.processFailedResponse(
                 `[${this.serviceName}] readRecordsByWildcard: ${e.message}`,
