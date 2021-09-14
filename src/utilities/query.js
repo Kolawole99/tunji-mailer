@@ -64,25 +64,27 @@ const buildQuery = (options) => {
     delete options.returnOnly;
     delete options.sortBy;
 
-    Object.keys(options).forEach((field) => {
-        const hasProperty = Object.prototype.hasOwnProperty.call(options, field);
-        const fieldValue = hasProperty === true ? options[field].toLowerCase() : '';
+    if (Object.keys(options).length !== 0) {
+        Object.keys(options).forEach((field) => {
+            const hasProperty = Object.prototype.hasOwnProperty.call(options, field);
+            const fieldValue = hasProperty === true ? options[field] : '';
 
-        if (fieldValue !== '') {
-            let condition;
-            if (fieldValue.includes(':')) {
-                condition = buildInQuery(fieldValue);
-            } else if (fieldValue.includes('!')) {
-                condition = buildNorQuery(fieldValue);
-            } else if (fieldValue.includes('~')) {
-                condition = buildRangeQuery(fieldValue);
-            } else {
-                condition = buildOrQuery(fieldValue);
+            if (fieldValue !== '') {
+                let condition;
+                if (fieldValue.includes(':')) {
+                    condition = buildInQuery(fieldValue);
+                } else if (fieldValue.includes('!')) {
+                    condition = buildNorQuery(fieldValue);
+                } else if (fieldValue.includes('~')) {
+                    condition = buildRangeQuery(fieldValue);
+                } else {
+                    condition = buildOrQuery(fieldValue);
+                }
+
+                seekConditions[field] = { ...condition };
             }
-
-            seekConditions[field] = { ...condition };
-        }
-    });
+        });
+    }
 
     return {
         count,
