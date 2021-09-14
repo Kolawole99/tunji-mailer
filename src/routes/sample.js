@@ -4,12 +4,11 @@
 
 const router = require('express').Router();
 const Controller = require('../controllers/index');
-const sampleSchemaValidator = require('../validators/sample');
 
 const sampleController = new Controller('Sample');
 const SampleService = require('../services/sample/sample');
 
-const sampleService = new SampleService(sampleController, sampleSchemaValidator);
+const sampleService = new SampleService(sampleController);
 
 try {
     router
